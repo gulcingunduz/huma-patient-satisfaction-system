@@ -1,0 +1,48 @@
+# Build outputs & compiled artifacts
+target/
+build/
+dist/
+out/
+*.jar
+*.war
+*.ear
+*.class
+
+# Frontend dependencies, build & test artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/playwright-report/
+frontend/test-results/
+
+# Local environment secrets (keep .env.example tracked)
+.env
+.env.*
+!.env.example
+
+# IDE & editor files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*.swo
+
+# OS & log files
+.DS_Store
+Thumbs.db
+*.log
+
+# Local scratch, chat exports & upgrade tool logs (keep out of public repo)
+.github/modernize/
+chat.json
+CHAT_LOG.md
+tumproje.txt
+build-study-guide.ps1
+HBYS_Proje_Ogrenme_Rehberi.doc
+HBYS_Proje_Ogrenme_Rehberi.html

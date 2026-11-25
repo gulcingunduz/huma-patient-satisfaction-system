@@ -1,0 +1,140 @@
+spring:
+  application:
+    name: patient-satisfaction-survey
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hbys}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${SESSION_COOKIE_SECURE:false}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+hbys:
+  security:
+    client-cookie-secure: ${SESSION_COOKIE_SECURE:false}
+    rate-limit:
+      enabled: ${HBYS_RATE_LIMIT_ENABLED:true}
+      public-requests-per-minute: ${HBYS_RATE_LIMIT_PUBLIC_PER_MIN:60}
+      login-requests-per-minute: ${HBYS_RATE_LIMIT_LOGIN_PER_MIN:15}
+  bootstrap:
+    admin:
+      username: ${HBYS_ADMIN_USERNAME:}
+      password: ${HBYS_ADMIN_PASSWORD:}
+  ai:
+    provider: ${HBYS_AI_PROVIDER:mock}
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_MODEL:gpt-4o-mini}
+      timeout-seconds: ${OPENAI_TIMEOUT_SECONDS:30}
+      max-tokens: ${OPENAI_MAX_TOKENS:500}
+      max-comments: ${OPENAI_MAX_COMMENTS:50}
+      max-comment-length: ${OPENAI_MAX_COMMENT_LENGTH:500}
+
+logging:
+  level:
+    root: INFO
+    com.hbys.survey: INFO
+    org.hibernate.SQL: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    com.hbys.survey: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${SESSION_COOKIE_SECURE:true}
+
+hbys:
+  security:
+    client-cookie-secure: ${SESSION_COOKIE_SECURE:true}
+
+logging:
+  level:
+    root: INFO
+    com.hbys.survey: INFO
+    org.hibernate.SQL: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:hbys_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+  flyway:
+    enabled: false
+
+hbys:
+  security:
+    rate-limit:
+      enabled: false
+  ai:
+    provider: mock
