@@ -65,9 +65,9 @@ export function SubmissionsPanel({ session, setError }) {
   const safePage = Math.min(page, totalPages);
   const pageItems = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
-  async function selectSubmission(item) {
+  async function selectSubmission(item, keepNotice = false) {
     setSelected(item);
-    setNotice("");
+    if (!keepNotice) setNotice("");
     setError("");
     try {
       const detail = await api(`/api/staff/submissions/${item.submissionId}`);
@@ -89,8 +89,8 @@ export function SubmissionsPanel({ session, setError }) {
         method: "POST",
         body: { submissionId: selected.submissionId, comment },
       });
+      await selectSubmission(selected, true);
       setNotice("Geri bildirim taslağı oluşturuldu.");
-      await selectSubmission(selected);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -107,8 +107,8 @@ export function SubmissionsPanel({ session, setError }) {
         method: "POST",
         body: { submissionId: selected.submissionId, status, notes },
       });
+      await Promise.all([refresh(), selectSubmission(selected, true)]);
       setNotice("Hasta Hakları kararı kaydedildi.");
-      await Promise.all([refresh(), selectSubmission(selected)]);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
